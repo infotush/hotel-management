@@ -2,7 +2,6 @@ import styled from "styled-components";
 
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
-import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -10,6 +9,7 @@ import { createCabin } from "../../services/apiCabins.js";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow.jsx";
 import Input from "../../ui/Input.jsx";
+import FileInput from "../../ui/FileInput.jsx";
 
 function CreateCabinForm() {
   const { register, handleSubmit, reset, formState, getValues } = useForm();
@@ -29,7 +29,7 @@ function CreateCabinForm() {
   });
 
   const onSubmit = (data) => {
-    mutate(data);
+    mutate({ ...data, image: data.image[0] });
   };
   // const onError = (errors) => {
   //   console.log(errors);
@@ -38,6 +38,7 @@ function CreateCabinForm() {
     <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow label="Cabin name" error={errors?.name?.message}>
         <Input
+          disabled={isPending}
           type="text"
           id="name"
           {...register("name", { required: "This field is required" })}
@@ -46,6 +47,7 @@ function CreateCabinForm() {
 
       <FormRow label="Maximum Capacity" error={errors?.maxCapacity?.message}>
         <Input
+          disabled={isPending}
           type="number"
           id="maxCapacity"
           {...register("maxCapacity", {
@@ -57,6 +59,7 @@ function CreateCabinForm() {
 
       <FormRow label="Regular Price" error={errors?.regularPrice?.message}>
         <Input
+          disabled={isPending}
           type="number"
           id="regularPrice"
           min="1"
@@ -68,6 +71,7 @@ function CreateCabinForm() {
 
       <FormRow label="Discount" error={errors?.discount?.message}>
         <Input
+          disabled={isPending}
           type="number"
           id="discount"
           min="0"
@@ -83,6 +87,7 @@ function CreateCabinForm() {
 
       <FormRow label="Description" error={errors?.description?.message}>
         <Textarea
+          disabled={isPending}
           type="number"
           id="description"
           defaultValue=""
@@ -90,8 +95,13 @@ function CreateCabinForm() {
         />
       </FormRow>
 
-      <FormRow label="Cabin photo" error="">
-        <FileInput id="image" accept="image/*" />
+      <FormRow label="Cabin photo" error={errors?.image?.message}>
+        <FileInput
+          disabled={isPending}
+          id="image"
+          accept="image/*"
+          {...register("image", { required: "This field is required" })}
+        />
       </FormRow>
 
       <FormRow>
@@ -99,7 +109,7 @@ function CreateCabinForm() {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isPending}>Edit cabin</Button>
+        <Button disabled={isPending}>Add cabin</Button>
       </FormRow>
     </Form>
   );
