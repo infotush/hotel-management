@@ -54,7 +54,6 @@ const CabinRow = ({ cabin }) => {
     maxCapacity,
     discount,
     regularPrice,
-    description,
   } = cabin;
 
   const queryClient = useQueryClient();
