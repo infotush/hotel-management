@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { getCabins } from "../../services/apiCabins.js";
 import Spinner from "../../ui/Spinner.jsx";
 import CabinRow from "./CabinRow.jsx";
+import { useCabin } from "./useCabin.js";
 
 const Table = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -29,15 +30,7 @@ const TableHeader = styled.header`
 `;
 
 const CabinTable = () => {
-  const {
-    data: cabins,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["cabins"],
-    queryFn: getCabins,
-  });
-
+  const { cabins, isLoading } = useCabin();
   if (isLoading) return <Spinner />;
 
   return (
