@@ -1,4 +1,4 @@
-import Form from "../../ui/Form";
+import Form from "../../ui/Form.jsx";
 import Button from "../../ui/Button";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
@@ -8,7 +8,7 @@ import FileInput from "../../ui/FileInput.jsx";
 import { useCreateCabin } from "./useCreateCabin.js";
 import { useEditCabin } from "./useEditCabin.js";
 
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   const { isCreating, createCabin } = useCreateCabin();
   const { isEditing, editCabin } = useEditCabin();
   const { id: editId, ...editValues } = cabinToEdit;
@@ -23,16 +23,35 @@ function CreateCabinForm({ cabinToEdit = {} }) {
   const onSubmit = (data) => {
     const image = typeof data.image === "string" ? data.image : data.image[0];
     if (isEditSession) {
-      editCabin({ newCabinData: { ...data, image }, id: editId });
+      editCabin(
+        { newCabinData: { ...data, image }, id: editId },
+        {
+          onSuccess: () => {
+            reset();
+            onCloseModal?.();
+          },
+        }
+      );
     } else {
-      createCabin({ ...data, image: image }, { onSuccess: () => reset() });
+      createCabin(
+        { ...data, image: image },
+        {
+          onSuccess: () => {
+            reset();
+            onCloseModal?.();
+          },
+        }
+      );
     }
   };
   // const onError = (errors) => {
   //   console.log(errors);
   // };
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit)}
+      type={onCloseModal ? "modal" : "regular"}
+    >
       <FormRow label="Cabin name" error={errors?.name?.message}>
         <Input
           disabled={isWorking}
@@ -105,7 +124,11 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => onCloseModal?.()}
+        >
           Cancel
         </Button>
         <Button disabled={isWorking}>
